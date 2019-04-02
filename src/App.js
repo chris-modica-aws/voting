@@ -9,11 +9,50 @@ Amplify.configure(aws_exports);
 
 
 class App extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = { votes: [] };
+  }
+
+  async componentDidMount() {
+    try {
+      const votes = await API.graphql(graphqlOperation(queries.listVotes))
+      this.setState({
+        votes: votes.data.listVotes.items
+      })
+    } catch (err) {
+      console.log('error fetching votes...', err)
+    }
+  }
+
+  candidates() {
+    return this.state.votes.map(candidate =>
+      <Candidate
+        key={candidate.id}
+        id={candidate.id}
+        name={candidate.candidate}
+      />);
+  }
+
+
   render() {
-    return (
-      <h1>Hello World</h1>
-    );
+    return this.candidates();
   }
 }
+
+class Candidate extends Component {
+
+  handleSubmit = async (event) => {
+    await event.preventDefault;
+    console.log(event);
+    return;
+  };
+
+  render() {
+    return <button className="ui button" onClick={() => this.handleSubmit(this.props.id)}>{this.props.name}</button>;
+  }
+}
+
 
 export default App;
