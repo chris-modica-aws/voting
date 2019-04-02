@@ -1,0 +1,4 @@
+{
+    "AppSyncApiName": "voting",
+    "DynamoDBBillingMode": "PAY_PER_REQUEST"
+}

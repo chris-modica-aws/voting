@@ -1,0 +1,6 @@
+type Vote @model {
+  id: ID!
+  candidate: String!
+  description: String
+  counter: Int!
+}
