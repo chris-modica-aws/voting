@@ -1,0 +1,75 @@
+mutation CreateVote1 {
+  createVote(
+    input: {
+      candidate: "S3"
+      description: "Objects"
+      counter: 0
+    }
+  )
+  {
+    id
+    candidate
+    description
+    counter
+  }
+}
+
+mutation CreateVote2 {
+  createVote(
+    input: {
+      candidate: "ECS"
+      description: "Containers"
+      counter: 0
+    }
+  )
+  {
+    id
+    candidate
+    description
+    counter
+  }
+}
+
+mutation CreateVote3 {
+  createVote(
+    input: {
+      candidate: "RDS"
+      description: "Databases"
+      counter: 0
+    }
+  )
+  {
+    id
+    candidate
+    description
+    counter
+  }
+}
+
+mutation CreateVote4 {
+  createVote(
+    input: {
+      candidate: "EC2"
+      description: "Computers"
+      counter: 0
+    }
+  )
+  {
+    id
+    candidate
+    description
+    counter
+  }
+}
+
+query AllVotes {
+  listVotes {
+    items {
+      id
+      candidate
+      description
+      counter
+    }
+  }
+}
+
