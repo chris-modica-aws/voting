@@ -5,8 +5,48 @@ import * as queries from './graphql/queries';
 import * as mutations from './graphql/mutations';
 import * as subscriptions from './graphql/subscriptions';
 import aws_exports from './aws-exports';
+import '../node_modules/react-vis/dist/style.css';
+import {
+  XYPlot,
+  XAxis,
+  YAxis,
+  VerticalGridLines,
+  HorizontalGridLines,
+  VerticalBarSeries,
+  VerticalBarSeriesCanvas,
+  LabelSeries
+} from 'react-vis';
+
 Amplify.configure(aws_exports);
 
+const series = [
+  { x: "Lambda",   y: 48, color: "#FC0107" },
+  { x: "DynamoDB", y: 15, color: "#FECC66" },
+  { x: "AppSync",  y: 94, color: "#108001" },
+  { x: "Amplify",  y: 32, color: "#0F80FF" },
+];
+
+const labelData = series.map((d, idx) => ({
+  x: d.x,
+  y: Math.max(series[idx].y)
+}));
+
+
+class Chart extends React.Component {
+  render() {
+    return (
+      <div>
+        <XYPlot xType="ordinal" width={450} height={450} xDistance={100}>
+          <VerticalGridLines />
+          <HorizontalGridLines />
+          <XAxis style = {{ text: {stroke: 'none', fill: '#6b6b76', fontWeight: 600, fontSize: 18 }}} />
+          <YAxis style = {{ text: {stroke: 'none', fill: '#6b6b76', fontWeight: 600, fontSize: 18 }}} />
+          <VerticalBarSeries className="vertical-bar-series-example" data={series} colorType="literal" />
+        </XYPlot>
+      </div>
+    );
+  }
+}
 
 class App extends Component {
 
@@ -68,7 +108,12 @@ class App extends Component {
 
 
   render() {
-    return this.candidates();
+    return (
+      <div className="App">
+        {this.candidates()}
+        <Chart></Chart>
+      </div>
+    )
   }
 }
 
@@ -78,7 +123,7 @@ class Candidate extends Component {
     await event.preventDefault;
     const castVote = {
       id: event,
-      counter: Math.floor(Math.random() * Math.floor(1000))
+      counter: Math.floor(Math.random() * Math.floor(100))
     };
 
     const newEvent = await API.graphql(graphqlOperation(mutations.updateVote, {input: castVote}));
@@ -95,6 +140,5 @@ class Candidate extends Component {
     );
   }
 }
-
 
 export default App;
