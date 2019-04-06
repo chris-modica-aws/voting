@@ -58,7 +58,6 @@ class App extends Component {
 
   render() {
     var divStyle = {
-      background: 'yellow',
       width: '100%',
       height: '600px'
     };
