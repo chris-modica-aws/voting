@@ -5,16 +5,7 @@ import * as queries from './graphql/queries';
 import * as mutations from './graphql/mutations';
 import * as subscriptions from './graphql/subscriptions';
 import aws_exports from './aws-exports';
-import '../node_modules/react-vis/dist/style.css';
-import {
-  XYPlot,
-  XAxis,
-  YAxis,
-  VerticalGridLines,
-  HorizontalGridLines,
-  VerticalBarSeries,
-  LabelSeries
-} from 'react-vis';
+import { VictoryBar, VictoryChart, VictoryAxis, VictoryTheme } from 'victory';
 
 Amplify.configure(aws_exports);
 
@@ -39,11 +30,11 @@ class App extends Component {
     }
 
     const subscription = API.graphql(
-      graphqlOperation(subscriptions.onUpdateVote)
+      graphqlOperation(subscriptions.onCastVote)
     ).subscribe({
       next: (updateData) => {
-        const id      = updateData.value.data.onUpdateVote.id
-        const counter = updateData.value.data.onUpdateVote.counter
+        const id      = updateData.value.data.onCastVote.id
+        const counter = updateData.value.data.onCastVote.counter
         console.log("id", id)
         const votesh = this.state.votes
         const row = votesh.find( thing => thing.id === id );
@@ -66,43 +57,67 @@ class App extends Component {
   };
 
   render() {
+    var divStyle = {
+      background: 'yellow',
+      width: '100%',
+      height: '600px'
+    };
     return (
       <div className="App">
         {this.candidates()}
-        <Chart votes={this.state.votes}></Chart>
+        <div style={divStyle}>
+          <Chart data={this.state.votes}></Chart>
+        </div>
       </div>
     )
   }
 }
 
 class Chart extends React.Component {
-
-
   render() {
-
     const colors = ["#FC0107", "#FECC66", "#108001", "#0F80FF"]
-    const chartSeries = this.props.votes.map(
+    const myData = this.props.data.map(
       (vote,idx) => ({
-        x: vote.candidate,
-        y: vote.counter,
+        candidate: vote.candidate,
+        counter: vote.counter,
         color: colors[idx]
       })
     );
 
-    const labelData = chartSeries.map((d) => ({
-      y: 100
-    }));
     return (
-      <div>
-      <XYPlot xType="ordinal" width='450' height={450} xDistance={100} animation>
-          <HorizontalGridLines />
-          <XAxis style={{ text: {stroke: 'none', fill: '#6b6b76', fontWeight: 600, fontSize: 18 }}} />
-          <YAxis style={{ text: {stroke: 'none', fill: '#6b6b76', fontWeight: 600, fontSize: 16 }}} />
-          <VerticalBarSeries className="vertical-bar-series-example" data={chartSeries} colorType="literal" />
-          <LabelSeries data={labelData} />
-        </XYPlot>
-      </div>
-    );
+      <VictoryChart
+        // domainPadding will add space to each side of VictoryBar to
+        // prevent it from overlapping the axis
+        domainPadding={{x: [50, 10]}}
+        maxDomain={{ y: 100 }}
+        height={300}
+        width={300}
+        >
+        <VictoryAxis
+          style={{
+            axis: {stroke: "#756f6a"},
+            ticks: {stroke: "grey", size: 0},
+            tickLabels: {fontSize: 12, padding: 5, fontFamily: '-apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'}
+          }}
+        />
+        <VictoryAxis
+          dependentAxis
+          style={{
+            axis: {stroke: "#756f6a"},
+            ticks: {stroke: "grey", size: 5},
+            tickLabels: {fontSize: 12, padding: 5, fontFamily: '-apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"'}
+          }}
+        />
+        <VictoryBar
+          barRatio={1}
+          data={myData}
+          alignment="middle"
+          x="candidate"
+          y="counter"
+          style={{ data: {fill: (d) => d.color }}}
+        />
+      </VictoryChart>
+    )
   }
 }
 
@@ -111,12 +126,10 @@ class Candidate extends Component {
   handleSubmit = async (event) => {
     await event.preventDefault;
     const castVote = {
-      id: event.id,
-      // counter: event.counter + 1
-      counter: Math.floor(Math.random() * Math.floor(100))
+      id: event.id
     };
 
-    const newEvent = await API.graphql(graphqlOperation(mutations.updateVote, {input: castVote}));
+    const newEvent = await API.graphql(graphqlOperation(mutations.castVote, {input: castVote}));
     // console.log(JSON.stringify(newEvent));
   };
 
@@ -124,8 +137,8 @@ class Candidate extends Component {
     console.log("props", this.props)
     return (
       <div>
-        {this.props.counter}
-        <button className="ui button" onClick={() => this.handleSubmit(this.props)}>{this.props.name}</button>
+      {this.props.counter}
+      <button className="ui button" onClick={() => this.handleSubmit(this.props)}>{this.props.name}</button>
       </div>
     );
   }
