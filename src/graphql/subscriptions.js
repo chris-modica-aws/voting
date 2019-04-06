@@ -1,6 +1,15 @@
 // eslint-disable
 // this is an auto generated file. This will be overwritten
 
+export const onCastVote = `subscription OnCastVote {
+  onCastVote {
+    id
+    candidate
+    description
+    counter
+  }
+}
+`;
 export const onCreateVote = `subscription OnCreateVote {
   onCreateVote {
     id

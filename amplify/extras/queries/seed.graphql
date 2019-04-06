@@ -73,3 +73,31 @@ query AllVotes {
   }
 }
 
+
+query AllVotes {
+  listVotes {
+    items {
+      id
+      candidate
+      description
+      counter
+    }
+  }
+}
+
+mutation CreateVotes {
+
+  createVote(
+    input: {
+      candidate: "EC2"
+      description: "Compute instances"
+      counter: 0
+    }
+  )
+  {
+    id
+    candidate
+    description
+    counter
+  }
+}
