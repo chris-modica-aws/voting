@@ -89,25 +89,10 @@ query AllVotes {
   }
 }
 
-
-query AllVotes {
-  listVotes {
-    items {
-      id
-      candidate
-      description
-      counter
-    }
-  }
-}
-
-mutation CreateVotes {
-
-  createVote(
+mutation CastVotes {
+  castVote(
     input: {
-      candidate: "EC2"
-      description: "Compute instances"
-      counter: 0
+      id: "0aeaaa91-4b94-4441-a4c4-5f948f11d70e"
     }
   )
   {
